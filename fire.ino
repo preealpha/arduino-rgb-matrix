@@ -102,7 +102,7 @@ unsigned char matrix[M_WIDTH][M_HEIGHT];
 unsigned char line[M_WIDTH];
 int pcnt = 0;
 int colorFadeCounter = 60 * 1;
-int startHue = 250;
+int startHue = 253;
 int timerOn = 60 * 5;
 int timerOff = 60 * 19;
 int timerCount = 0;
@@ -111,6 +111,8 @@ boolean updateScreen = true;
 boolean fade = true;
 boolean fadeIn = true;
 int fadeValue = 255;
+int flickerValue = 10;
+int flickertargets[4] = {1, 50, 70, 20};
 
 /**
  * Randomly generate the next line (matrix row)
@@ -237,7 +239,7 @@ void setup() {
   }
   
   int tickEvent = t.every(60000, onMinuteTick);
-  int tickEvent2 = t.every(10, doloop);
+  int tickEvent2 = t.every(15, doloop);
   
 }
 
@@ -261,7 +263,16 @@ void doloop() {
         updateScreen = false;
       }
     }
+  } else {
+    if (fadeValue == flickerValue) {
+      flickerValue = flickertargets[random(0,4)];
+    }
+    if (updateScreen) {
+      if (fadeValue > flickerValue) fadeValue--;
+      if (fadeValue < flickerValue) fadeValue++;
+    }
   }
+  
   
   if (updateScreen) {
     if (fadeColor && colorFadeCounter >= 100) {
